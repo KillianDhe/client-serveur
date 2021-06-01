@@ -2,10 +2,12 @@ package fr.iut.ArtisteManager.domain;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.List;
 
+@Document(collection = "artistes")
 public class Artiste {
 
     @Id
@@ -19,12 +21,12 @@ public class Artiste {
 
     private Date dateDeNaissance;
 
-    private List<Distributeur> distributeur;
+    private Distributeur distributeur;
 
     public Artiste() {
     }
 
-    public Artiste(String pseudo, String nom, String prenom, Date dateDeNaissance, List<Distributeur> distributeur) {
+    public Artiste(String pseudo, String nom, String prenom, Date dateDeNaissance,Distributeur distributeur) {
         this.pseudo = pseudo;
         this.nom = nom;
         this.prenom = prenom;
@@ -52,7 +54,36 @@ public class Artiste {
         this.dateDeNaissance = dateDeNaissance;
     }
 
-    public void setDistributeur(List<Distributeur> distributeur) {
+
+    public ObjectId get_id() {
+        return _id;
+    }
+
+    public String getPseudo() {
+        return pseudo;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public String getPrenom() {
+        return prenom;
+    }
+
+    public Date getDateDeNaissance() {
+        return dateDeNaissance;
+    }
+
+    public void set_id(ObjectId _id) {
+        this._id = _id;
+    }
+
+    public Distributeur getDistributeur() {
+        return distributeur;
+    }
+
+    public void setDistributeur(Distributeur distributeur) {
         this.distributeur = distributeur;
     }
 }
