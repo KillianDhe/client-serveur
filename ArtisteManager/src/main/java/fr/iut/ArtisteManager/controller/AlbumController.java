@@ -27,8 +27,8 @@ public class AlbumController {
         this.repository = repository;
     }
 
-    @GetMapping("/album")
-    public List<Album> list(@RequestParam(required = false) String name) {
+    @GetMapping("/getAllAlbums")
+    public List<Album> getAllAlbums() {
         return repository.findAll();
     }
 
