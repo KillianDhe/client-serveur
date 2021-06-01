@@ -32,6 +32,20 @@ public class AlbumController {
         return repository.findAll();
     }
 
+    @GetMapping("/getAlbumByTitre")
+    public Album getAlbumByTitre(@RequestParam(required = true) String name) {
+        return repository.findByTitre(name);
+    }
+
+    @DeleteMapping("/deleteAlbumByTitre")
+    public void deleteAlbumByTitre(@RequestParam(required = true) String name) {
+        if (name.equals("")) {
+            //exception
+            return;
+        }
+        repository.deleteAlbumByTitre(name);
+    }
+
     @PostMapping("/album")
     public Album insert(@RequestBody Album entity) {
         if (entity == null) {
