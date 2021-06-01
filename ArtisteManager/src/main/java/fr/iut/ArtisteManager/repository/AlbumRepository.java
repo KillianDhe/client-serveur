@@ -10,5 +10,6 @@ import java.util.List;
 public interface AlbumRepository extends MongoRepository<Album, ObjectId> {
 
     Album findByTitre(String titre);
+    void deleteAlbumByTitre(String titre);
 
 }
