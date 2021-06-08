@@ -23,7 +23,7 @@ public class AlbumController {
      * Spring fonctionne avec de l'injection de dépendances, pas d'annotation à rajouter dans les controller,
      * pas de new, il va s'en charger pour vous grâce à l'annotation présente sur cette classe.
      */
-    public AlbumController(AlbumRepository repository) { // Il vous faut une implem à vous pour que ça compile
+    public AlbumController(AlbumRepository repository) {
         this.repository = repository;
     }
 
@@ -46,12 +46,37 @@ public class AlbumController {
         repository.deleteAlbumByTitre(name);
     }
 
-    @PostMapping("/album")
-    public Album insert(@RequestBody Album entity) {
+    @DeleteMapping("/deleteAlbum/{id}")
+    public void deleteAlbum(@PathVariable String id) {
+        ObjectId objectId = new ObjectId(id);
+        if (id.equals("")) {
+            throw new CustomException("Il faut renseigner un id");
+        }
+        if(!repository.existsById(objectId)){
+            throw new CustomException("Cet album n'existe pas");
+        }
+        repository.deleteById(objectId);
+    }
+
+    @PostMapping("/addAlbum")
+    public Album addAlbum(@RequestBody Album entity) {
         if (entity == null) {
             throw new CustomException("Must be not null");
         }
-        return repository.save(entity);
+        if(repository.existsById(entity.get_id())){
+            throw new CustomException("Cet album existe déjà");
+        }
+        return repository.insert(entity);
     }
 
+    @PutMapping("/updateAlbum")
+    public Album updateAlbum(@RequestBody Album entity) {
+        if (entity == null) {
+            throw new CustomException("Must be not null");
+        }
+        if(!repository.existsById(entity.get_id())){
+            throw new CustomException("Cet album n'existe pas");
+        }
+        return repository.save(entity);
+    }
 }
