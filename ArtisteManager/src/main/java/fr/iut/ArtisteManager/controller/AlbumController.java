@@ -11,32 +11,47 @@ import java.util.List;
 
 
 /**
- * Les Controller vont vous permettre une exposition rapide vos {@link org.springframework.data.mongodb.repository.MongoRepository}
- * et une mise en situation de leurs cas d'usages.
+ * Controller permettant de gérer les albums
  */
 @RestController
 public class AlbumController {
 
+    /**
+     * Le repository pour gérer les albums
+     */
     final AlbumRepository repository;
 
     /**
-     * Spring fonctionne avec de l'injection de dépendances, pas d'annotation à rajouter dans les controller,
-     * pas de new, il va s'en charger pour vous grâce à l'annotation présente sur cette classe.
+     * Constructeur du AlbumController, injecte le repository
+      * @param repository = repository à injetcer
      */
     public AlbumController(AlbumRepository repository) {
         this.repository = repository;
     }
 
+    /**
+     * Méthode pour récupérer tous les albums de la base de données
+     * @return la liste des albums
+     */
     @GetMapping("/getAllAlbums")
     public List<Album> getAllAlbums() {
         return repository.findAll();
     }
 
+    /**
+     * Méthode pour récupérer un album à partir de son titre
+     * @param name : titre de l'album
+     * @return l'album qui possède le titre "name"
+     */
     @GetMapping("/getAlbumByTitre")
     public Album getAlbumByTitre(@RequestParam(required = true) String name) {
         return repository.findByTitre(name);
     }
 
+    /**
+     * Méthode pour supprimer un album selon son titre
+     * @param name : titre de l'album à supprimer
+     */
     @DeleteMapping("/deleteAlbumByTitre")
     public void deleteAlbumByTitre(@RequestParam(required = true) String name) {
         if (name.equals("")) {
@@ -46,6 +61,10 @@ public class AlbumController {
         repository.deleteAlbumByTitre(name);
     }
 
+    /**
+     * Méthode pour supprimer un album selon son id
+     * @param id : id de l'album à supprimer
+     */
     @DeleteMapping("/deleteAlbum/{id}")
     public void deleteAlbum(@PathVariable String id) {
         ObjectId objectId = new ObjectId(id);
@@ -58,6 +77,11 @@ public class AlbumController {
         repository.deleteById(objectId);
     }
 
+    /**
+     * Méthode pour ajouter un album en base de données
+     * @param entity : l'album à ajouter
+     * @return l'album ajouté
+     */
     @PostMapping("/addAlbum")
     public Album addAlbum(@RequestBody Album entity) {
         if (entity == null) {
@@ -69,6 +93,11 @@ public class AlbumController {
         return repository.insert(entity);
     }
 
+    /**
+     * Méthode pour modifier un album, doit contenir l'id de l'album à modifier, tous les autres champs seront modifiés
+     * @param entity : album à modifier
+     * @return l'album modifié
+     */
     @PutMapping("/updateAlbum")
     public Album updateAlbum(@RequestBody Album entity) {
         if (entity == null) {
