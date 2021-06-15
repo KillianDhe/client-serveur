@@ -1,6 +1,7 @@
 package fr.iut.ArtisteManager.controller;
 
 import fr.iut.ArtisteManager.domain.Album;
+import fr.iut.ArtisteManager.domain.AlbumAggregate;
 import fr.iut.ArtisteManager.repository.AlbumRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,23 @@ public class AlbumController {
     @GetMapping("/getAllAlbums")
     public List<Album> getAllAlbums() {
         return repository.findAll();
+    }
+
+    /**
+     * Méthode pour récupérer un album à partir de son id
+     * @param id : titre de l'album
+     * @return l'album qui possède l'identifiant "id"
+     */
+    @GetMapping("/getAlbumById/{id}")
+    public Album getAlbumById(@PathVariable String id) {
+        ObjectId objectId = new ObjectId(id);
+        if (id.equals("")) {
+            throw new CustomException("Il faut renseigner un id");
+        }
+        if (repository.findById(objectId).isPresent()) {
+            return repository.findById(objectId).get();
+        }
+        throw new CustomException("Aucun album n'existe pour l'id renseigné");
     }
 
     /**
@@ -87,9 +105,6 @@ public class AlbumController {
         if (entity == null) {
             throw new CustomException("Must be not null");
         }
-        if(repository.existsById(entity.get_id())){
-            throw new CustomException("Cet album existe déjà");
-        }
         return repository.insert(entity);
     }
 
@@ -107,5 +122,23 @@ public class AlbumController {
             throw new CustomException("Cet album n'existe pas");
         }
         return repository.save(entity);
+    }
+
+    /**
+     * Méthode de recherche permettant de récupérer tous les titres des albums (basé sur un pipeline d'aggregation)
+     * @return la liste des titres
+     */
+    @GetMapping("/findAllTitresAlbum")
+    public List<String> findAllTitresAlbum() {
+        return repository.findAllTitres();
+    }
+
+    /**
+     * Méthode de recherche permettant de récupérer tous les titres des albums (basé sur un pipeline d'aggregation)
+     * @return la liste des titres
+     */
+    @GetMapping("/groupByTitreAndMusiquesAlbum")
+    public List<AlbumAggregate> groupByTitreAndMusiquesAlbum() {
+        return repository.groupByTitreAndMusiques();
     }
 }
