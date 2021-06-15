@@ -134,8 +134,8 @@ public class AlbumController {
     }
 
     /**
-     * Méthode de recherche permettant de récupérer tous les titres des albums (basé sur un pipeline d'aggregation)
-     * @return la liste des titres
+     * Méthode de recherche permettant de récupérer des AlbumAggregate (basé sur un pipeline d'aggregation)
+     * @return la liste des AlbumsAggregate
      */
     @GetMapping("/groupByTitreAndMusiquesAlbum")
     public List<AlbumAggregate> groupByTitreAndMusiquesAlbum() {
