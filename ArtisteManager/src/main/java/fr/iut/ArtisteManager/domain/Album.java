@@ -234,3 +234,4 @@ public class Album {
         this.contact = contact;
     }
 }
+
