@@ -25,24 +25,19 @@ public class Album {
     private String titre;
 
     /**
-     * Couverture d'un album
+     * Couverture d'un album (devient imageDeCouverture en v1)
      */
     private String couverture;
+
+    /**
+     * l'image de couverture à utiliser pour l'album (URL).
+     */
+    private String imageDeCouverture;
 
     /**
      * Version du schema
      */
     private int schema_version;
-
-    /**
-     * Numéro de telephone pour contacter l'artiste
-     */
-    private String numeroTelephone;
-
-    /**
-     * Les moyends de contact de l'artiste
-     */
-    private Contact contact;
 
     public int getSchema_version() {
         return schema_version;
@@ -95,15 +90,13 @@ public class Album {
      * @param artiste = artiste de l'album
      * @param musiques = liste des musiques de l'album
      */
-    public Album(String titre, String couverture, Date dateDeParution, ObjectId artiste_id, Artiste artiste, List<Musique> musiques, String numeroTelephone, Contact contact) {
+    public Album(String titre, String couverture, Date dateDeParution, ObjectId artiste_id, Artiste artiste, List<Musique> musiques) {
         this.titre = titre;
         this.couverture = couverture;
         this.dateDeParution = dateDeParution;
         this.artiste_id = artiste_id;
         this.artiste = artiste;
         this.musiques = musiques;
-        this.numeroTelephone = numeroTelephone;
-        this.contact = contact;
     }
 
     /**
@@ -218,20 +211,12 @@ public class Album {
         this.musiques = musiques;
     }
 
-    public String getNumeroTelephone() {
-        return numeroTelephone;
+    public String getImageDeCouverture() {
+        return imageDeCouverture;
     }
 
-    public void setNumeroTelephone(String numeroTelephone) {
-        this.numeroTelephone = numeroTelephone;
-    }
-
-    public Contact getContact() {
-        return contact;
-    }
-
-    public void setContact(Contact contact) {
-        this.contact = contact;
+    public void setImageDeCouverture(String imageDeCouverture) {
+        this.imageDeCouverture = imageDeCouverture;
     }
 }
 

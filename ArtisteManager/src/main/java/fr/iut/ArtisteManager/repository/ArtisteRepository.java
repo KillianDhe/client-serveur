@@ -8,5 +8,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface ArtisteRepository extends MongoRepository<Artiste, ObjectId> {
-        Artiste findArtisteByPseudo(String pseudo);
+        Artiste findArtistesByPseudo(String pseudo);
 }

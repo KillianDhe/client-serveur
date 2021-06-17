@@ -99,16 +99,13 @@ public class ArtisteController {
             if (entity == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"artiste Must be not null");
             }
-            if (entity.get_id() == null) {
-                throw new EmptyOrNullIdException();
-            }
-            if(repository.existsById(entity.get_id())){
+            if (entity.get_id() != null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Cete artiste existe déjà gogole ! mets pas d'id dans l'ajout wola pas besoin ptn !");
             }
-            if(!IsArtisteLastVersion(entity)){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Creez un artiste avec la derniere version ! (je pourrais faire la conversion moi meme mais non héhé)");
-            }
-            return repository.insert(entity);
+
+            Artiste updated = convertSchemaToLastVersionIfNedded(entity);
+            if(updated != null){return updated;}
+            return repository.save(entity);
         }
        catch (ResponseStatusException | EmptyOrNullIdException e){
             throw  e;

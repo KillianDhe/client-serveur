@@ -14,7 +14,9 @@ import java.util.List;
  */
 public interface AlbumRepository extends MongoRepository<Album, ObjectId> {
 
-    Album findByTitre(String titre);
+    List<Album> findAlbumsByTitre(String titre);
+
+    List<Album> findAlbumsByTitreContaining(String titre);
 
     void deleteAlbumsByTitre(String titre);
 

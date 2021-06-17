@@ -2,7 +2,6 @@ package fr.iut.ArtisteManager.controller;
 
 import fr.iut.ArtisteManager.domain.Album;
 import fr.iut.ArtisteManager.domain.Artiste;
-import fr.iut.ArtisteManager.domain.Contact;
 import fr.iut.ArtisteManager.domain.Identite;
 import fr.iut.ArtisteManager.exception.AlbumNotFoundException;
 import fr.iut.ArtisteManager.exception.ArtisteNotFoundException;
@@ -17,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,21 +40,6 @@ public class AlbumController {
      */
     public AlbumController(AlbumRepository repository) {
         this.repository = repository;
-    }
-
-    /**
-     * Méthode pour récupérer tous les albums de la base de données
-     * @return la liste des albums
-     */
-    @GetMapping("/getAllAlbums")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Album> getAllAlbums() {
-        try{
-            return repository.findAll();
-        }
-        catch (Exception ex){
-            throw new UnknownRestException();
-        }
     }
 
     /**
@@ -143,6 +128,53 @@ public class AlbumController {
     }
 
     /**
+     * Méthode pour récupérer tous les albums de la base de données
+     * @return la liste des albums
+     */
+    @GetMapping("/getAllAlbums")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Album> getAllAlbums() {
+        try{
+            return repository.findAll();
+        }
+        catch (Exception ex){
+            throw new UnknownRestException();
+        }
+    }
+
+    /**
+     * Méthode pour récupérer tous les albums de la base de données avec un titre contenant le titre passé en paramètre
+     * @param titre
+     * @returnla liste des albums
+     */
+    @GetMapping("/getAllAlbumsByTitreContaining")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Album> getAllAlbumsByTitreContaining(@RequestParam(required = true) String titre) {
+        try{
+            return repository.findAlbumsByTitreContaining(titre);
+        }
+        catch (Exception ex){
+            throw new UnknownRestException();
+        }
+    }
+
+    /**
+     * Méthode pour récupérer tous les albums de la base de données
+     * @return la liste des albums
+     */
+
+    @GetMapping("/getAllAlbumsByTitre")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Album> getAllAlbumsByTitre(@RequestParam(required = true) String titre) {
+        try{
+            return repository.findAlbumsByTitre(titre);
+        }
+        catch (Exception ex){
+            throw new UnknownRestException();
+        }
+    }
+
+    /**
      * Méthode pour ajouter un album en base de données
      * @param entity : l'album à ajouter
      * @return l'album ajouté
@@ -155,16 +187,12 @@ public class AlbumController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"album Must be not null");
             }
 
-            if (entity.get_id() == null) {
-                throw new EmptyOrNullIdException();
+            if (entity.get_id() != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Cete artiste existe déjà gogole ! mets pas d'id dans l'ajout wola pas besoin ptn !");
             }
 
-            if(repository.existsById(entity.get_id())){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Cet id album existe déjà ! pas besoin d'id pour l'ajout");
-            }
-            if(!IsAlbumLastVersion(entity)){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Merci de donner la derniere version d'album");
-            }
+            Album updated = convertSchemaToLastVersionIfNedded(entity);
+            if(updated != null){return updated;}
             return repository.insert(entity);
         }
         catch (ResponseStatusException | EmptyOrNullIdException e){
@@ -202,6 +230,36 @@ public class AlbumController {
         }
         catch (Exception ex){
             throw  new UnknownRestException();
+        }
+    }
+
+    @PutMapping("/updateAlbumSchematoV1/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Album updateArtisteSchema(@PathVariable String id){
+        try{
+            if (id.equals("") || id == null) {
+                throw new EmptyOrNullIdException();
+            }
+            ObjectId objectId;
+            try{
+                objectId = new ObjectId(id);
+            }
+            catch(IllegalArgumentException ex){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "le format de l'identifiant n'est pas bon chacal");
+            }
+            if(!repository.existsById(objectId)){
+                throw new AlbumNotFoundException(objectId);
+            }
+            Optional<Album> toPotientalliyUpdate = repository.findById(objectId);
+            Album updated = convertSchemaToLastVersionIfNedded(toPotientalliyUpdate.get());
+            if(updated != null){return updated;}
+            return toPotientalliyUpdate.get();
+        }
+        catch (ResponseStatusException | AlbumNotFoundException | EmptyOrNullIdException e){
+            throw  e;
+        }
+        catch (Exception ex){
+            throw new UnknownRestException();
         }
     }
 
@@ -247,10 +305,7 @@ public class AlbumController {
     }
 
     private Album convertAlbumV0ToV1(Album album) {
-        Contact contact = new Contact();
-        contact.setNumeroTelephoneFixe(album.getNumeroTelephone());
-        contact.setNumeroTelephonePortable(album.getNumeroTelephone());
-        album.setContact(contact);
+        album.setImageDeCouverture(album.getCouverture());
         album.setSchema_version(1);
         repository.save(album);
         return album;
