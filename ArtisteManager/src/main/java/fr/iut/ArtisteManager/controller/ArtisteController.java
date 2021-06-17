@@ -1,6 +1,7 @@
 package fr.iut.ArtisteManager.controller;
 
 import fr.iut.ArtisteManager.domain.Artiste;
+import fr.iut.ArtisteManager.domain.ArtisteWithAlbum;
 import fr.iut.ArtisteManager.domain.Identite;
 import fr.iut.ArtisteManager.exception.ArtisteNotFoundException;
 import fr.iut.ArtisteManager.exception.EmptyOrNullIdException;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.Optional;
 
@@ -204,6 +206,34 @@ public class ArtisteController {
         catch (ArtisteNotFoundException | EmptyOrNullIdException | ResponseStatusException e){
             throw  e;
         } catch (Exception ex){
+            throw new UnknownRestException();
+        }
+    }
+
+    /**
+     * récupère tous les artistes de la base.
+     * @return La liste de tous les artistes
+     */
+    @GetMapping("/getArtisteByIdWithAlbums")
+    @ResponseStatus(HttpStatus.OK)
+    public ArtisteWithAlbum getArtisteByIdWithAlbums(@RequestParam(required = true) String id) {
+        try{
+            if (id.equals("") || id == null) {
+                throw new EmptyOrNullIdException();
+            }
+            ObjectId objectId;
+            try {
+                objectId = new ObjectId(id);
+            } catch (IllegalArgumentException ex) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "le format de l'identifiant n'est pas bon chacal");
+            }
+            return repository.findArtisteBy_idWithAlbums(objectId);
+        }
+        catch (ArtisteNotFoundException | EmptyOrNullIdException | ResponseStatusException e){
+            throw  e;
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
             throw new UnknownRestException();
         }
     }
