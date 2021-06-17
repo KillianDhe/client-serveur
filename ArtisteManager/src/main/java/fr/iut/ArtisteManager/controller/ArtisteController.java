@@ -55,7 +55,7 @@ public class ArtisteController {
      * @return l'artiste trouvé
      */
     @PostMapping("/getArtisteById")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     public Artiste getArtisteByPseudo(@RequestParam String id) {
         try{
             ObjectId objectId;
@@ -93,6 +93,7 @@ public class ArtisteController {
      * @return l'artiste ajouté
      */
     @PostMapping("/addArtiste")
+    @ResponseStatus(HttpStatus.CREATED)
     public Artiste addArtiste(@RequestBody Artiste entity) {
         try{
             if (entity == null) {
@@ -186,7 +187,7 @@ public class ArtisteController {
      * @param id l'id de l'artise que l'on souhaite supprimer (format string)
      */
     @DeleteMapping("/deleteArtiste/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteArtiste(@PathVariable String id) {
         try {
             if (id.equals("") || id == null) {

@@ -47,6 +47,7 @@ public class AlbumController {
      * @return la liste des albums
      */
     @GetMapping("/getAllAlbums")
+    @ResponseStatus(HttpStatus.OK)
     public List<Album> getAllAlbums() {
         try{
             return repository.findAll();
@@ -62,6 +63,7 @@ public class AlbumController {
      * @return l'album qui possède l'identifiant "id"
      */
     @GetMapping("/getAlbumById/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public Album getAlbumById(@PathVariable String id) {
         try{
             ObjectId objectId;
@@ -98,6 +100,7 @@ public class AlbumController {
      * @param name : titre des albums à supprimer
      */
     @DeleteMapping("/deleteAlbumsByTitre")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAlbumsByTitre(@RequestParam(required = true) String name) {
         try{
             repository.deleteAlbumsByTitre(name);
@@ -112,6 +115,7 @@ public class AlbumController {
      * @param id : id de l'album à supprimer
      */
     @DeleteMapping("/deleteAlbum/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAlbum(@PathVariable String id) {
         try{
             ObjectId objectId;
@@ -144,6 +148,7 @@ public class AlbumController {
      * @return l'album ajouté
      */
     @PostMapping("/addAlbum")
+    @ResponseStatus(HttpStatus.CREATED)
     public Album addAlbum(@RequestBody Album entity) {
         try{
             if (entity == null) {
@@ -176,6 +181,7 @@ public class AlbumController {
      * @return l'album modifié
      */
     @PutMapping("/updateAlbum")
+    @ResponseStatus(HttpStatus.OK)
     public Album updateAlbum(@RequestBody Album entity) {
         try{
             if (entity == null) {
@@ -204,6 +210,7 @@ public class AlbumController {
      * @return la liste des titres
      */
     @GetMapping("/findAllTitresAlbum")
+    @ResponseStatus(HttpStatus.OK)
     public List<String> findAllTitresAlbum() {
         try {
             return repository.findAllTitres();
@@ -218,6 +225,7 @@ public class AlbumController {
      * @return la liste des AlbumsAggregate
      */
     @GetMapping("/groupByTitreAndMusiquesAlbum")
+    @ResponseStatus(HttpStatus.OK)
     public List<AlbumAggregate> groupByTitreAndMusiquesAlbum() {
         try {
             return repository.groupByTitreAndMusiques();
