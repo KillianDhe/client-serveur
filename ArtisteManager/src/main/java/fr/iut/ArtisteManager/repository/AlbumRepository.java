@@ -20,7 +20,7 @@ public interface AlbumRepository extends MongoRepository<Album, ObjectId> {
 
     void deleteAlbumsByTitre(String titre);
 
-    @Aggregation({"{ $unwind : \"$musiques\" }", "{ $group: { _id: $titre, musiques: { $addToSet: $musiques }, count: { $sum: 1 } } }"})
+    @Aggregation({"{ $unwind : \"$musiques\" }", "{ $group: { _id: $titre, musiques: { $addToSet: $musiques } } }", "{ $project: { \"count\": { $size: \"$musiques\" }, musiques: 1 } }"})
     List<AlbumAggregate> groupByTitreAndMusiques();
 
     @Aggregation("{ $project: { _id: $titre } }")
