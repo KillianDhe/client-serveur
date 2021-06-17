@@ -6,11 +6,6 @@ import org.springframework.data.annotation.Id;
 public class Distributeur {
 
     /**
-     * l'identifiant du sistributeur
-     */
-    private ObjectId id;
-
-    /**
      * Le nom du distributeur
      */
     private  String nom;
@@ -30,22 +25,6 @@ public class Distributeur {
     }
 
     /**
-     * Défini l'identifiant du distributeur
-     * @return l'identifiant  du distributeur
-     */
-    public ObjectId getId() {
-        return id;
-    }
-
-    /**
-     * Définit l'identifiant du distributeur
-     * @param id l'identifiant du distributeur
-     */
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
-
-    /**
      * Obtient le nom du distributeur
      * @return le nom du distribteur
      */
@@ -60,4 +39,5 @@ public class Distributeur {
     public void setNom(String nom) {
         this.nom = nom;
     }
+
 }

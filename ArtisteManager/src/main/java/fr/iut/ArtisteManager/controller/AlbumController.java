@@ -1,14 +1,24 @@
 package fr.iut.ArtisteManager.controller;
 
 import fr.iut.ArtisteManager.domain.Album;
+import fr.iut.ArtisteManager.domain.Artiste;
+import fr.iut.ArtisteManager.domain.Contact;
+import fr.iut.ArtisteManager.domain.Identite;
+import fr.iut.ArtisteManager.exception.AlbumNotFoundException;
+import fr.iut.ArtisteManager.exception.ArtisteNotFoundException;
 import fr.iut.ArtisteManager.domain.AlbumAggregate;
+import fr.iut.ArtisteManager.exception.EmptyOrNullIdException;
+import fr.iut.ArtisteManager.exception.UnknownRestException;
 import fr.iut.ArtisteManager.repository.AlbumRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -21,6 +31,8 @@ public class AlbumController {
      * Le repository pour gérer les albums
      */
     final AlbumRepository repository;
+
+    private final static int albumSchemaVersion = 1;
 
     /**
      * Constructeur du AlbumController, injecte le repository
@@ -35,8 +47,14 @@ public class AlbumController {
      * @return la liste des albums
      */
     @GetMapping("/getAllAlbums")
+    @ResponseStatus(HttpStatus.OK)
     public List<Album> getAllAlbums() {
-        return repository.findAll();
+        try{
+            return repository.findAll();
+        }
+        catch (Exception ex){
+            throw new UnknownRestException();
+        }
     }
 
     /**
@@ -45,38 +63,51 @@ public class AlbumController {
      * @return l'album qui possède l'identifiant "id"
      */
     @GetMapping("/getAlbumById/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public Album getAlbumById(@PathVariable String id) {
-        ObjectId objectId = new ObjectId(id);
-        if (id.equals("")) {
-            throw new CustomException("Il faut renseigner un id");
+        try{
+            ObjectId objectId;
+            if (id.equals("") || id == null) {
+                throw new EmptyOrNullIdException();
+            }
+            try{
+                objectId = new ObjectId(id);
+            }catch (IllegalArgumentException ex) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "le format de l'identifiant n'est pas bon chacal");
+            }
+
+            if (!repository.existsById(objectId)){
+                throw new ArtisteNotFoundException();
+            }
+
+            Optional<Album> albumFound = repository.findById(objectId);
+            Album updated  = convertSchemaToLastVersionIfNedded(albumFound.get());
+            if(updated != null){return updated;}
+            return albumFound.get();
         }
-        if (repository.findById(objectId).isPresent()) {
-            return repository.findById(objectId).get();
+        catch (ResponseStatusException | EmptyOrNullIdException | AlbumNotFoundException e){
+            throw e;
         }
-        throw new CustomException("Aucun album n'existe pour l'id renseigné");
+        catch (Exception exception){
+            throw new UnknownRestException();
+        }
+
     }
 
-    /**
-     * Méthode pour récupérer un album à partir de son titre
-     * @param name : titre de l'album
-     * @return l'album qui possède le titre "name"
-     */
-    @GetMapping("/getAlbumByTitre")
-    public Album getAlbumByTitre(@RequestParam(required = true) String name) {
-        return repository.findByTitre(name);
-    }
 
     /**
-     * Méthode pour supprimer un album selon son titre
-     * @param name : titre de l'album à supprimer
+     * Méthode pour supprimer tous les albums avec un titre donné
+     * @param name : titre des albums à supprimer
      */
-    @DeleteMapping("/deleteAlbumByTitre")
-    public void deleteAlbumByTitre(@RequestParam(required = true) String name) {
-        if (name.equals("")) {
-            //exception
-            return;
+    @DeleteMapping("/deleteAlbumsByTitre")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAlbumsByTitre(@RequestParam(required = true) String name) {
+        try{
+            repository.deleteAlbumsByTitre(name);
         }
-        repository.deleteAlbumByTitre(name);
+        catch (Exception exception){
+            throw new UnknownRestException();
+        }
     }
 
     /**
@@ -84,15 +115,31 @@ public class AlbumController {
      * @param id : id de l'album à supprimer
      */
     @DeleteMapping("/deleteAlbum/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAlbum(@PathVariable String id) {
-        ObjectId objectId = new ObjectId(id);
-        if (id.equals("")) {
-            throw new CustomException("Il faut renseigner un id");
+        try{
+            ObjectId objectId;
+            if (id.equals("") || id == null) {
+                throw new EmptyOrNullIdException("Donnes un id chacal !");
+            }
+
+            try {
+                objectId = new ObjectId(id);
+            } catch (IllegalArgumentException ex) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "le format de l'identifiant n'est pas bon chacal");
+            }
+
+            if (!repository.existsById(objectId)) {
+                throw new AlbumNotFoundException(objectId);
+            }
+
+            repository.deleteById(objectId);
         }
-        if(!repository.existsById(objectId)){
-            throw new CustomException("Cet album n'existe pas");
+        catch (AlbumNotFoundException | EmptyOrNullIdException | ResponseStatusException e){
+            throw  e;
+        } catch (Exception ex){
+            throw new UnknownRestException();
         }
-        repository.deleteById(objectId);
     }
 
     /**
@@ -101,11 +148,31 @@ public class AlbumController {
      * @return l'album ajouté
      */
     @PostMapping("/addAlbum")
+    @ResponseStatus(HttpStatus.CREATED)
     public Album addAlbum(@RequestBody Album entity) {
-        if (entity == null) {
-            throw new CustomException("Must be not null");
+        try{
+            if (entity == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"album Must be not null");
+            }
+
+            if (entity.get_id() == null) {
+                throw new EmptyOrNullIdException();
+            }
+
+            if(repository.existsById(entity.get_id())){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Cet id album existe déjà ! pas besoin d'id pour l'ajout");
+            }
+            if(!IsAlbumLastVersion(entity)){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Merci de donner la derniere version d'album");
+            }
+            return repository.insert(entity);
         }
-        return repository.insert(entity);
+        catch (ResponseStatusException | EmptyOrNullIdException e){
+            throw  e;
+        }
+        catch (Exception ex){
+            throw new UnknownRestException();
+        }
     }
 
     /**
@@ -114,14 +181,28 @@ public class AlbumController {
      * @return l'album modifié
      */
     @PutMapping("/updateAlbum")
+    @ResponseStatus(HttpStatus.OK)
     public Album updateAlbum(@RequestBody Album entity) {
-        if (entity == null) {
-            throw new CustomException("Must be not null");
+        try{
+            if (entity == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"album Must be not null");
+            }
+            if (entity.get_id() == null) {
+                throw new EmptyOrNullIdException();
+            }
+            if( ! repository.existsById(entity.get_id())){
+                throw new AlbumNotFoundException(entity.get_id());
+            }
+            Album updated = convertSchemaToLastVersionIfNedded(entity);
+            if(updated != null){return updated;}
+            return repository.save(entity);
         }
-        if(!repository.existsById(entity.get_id())){
-            throw new CustomException("Cet album n'existe pas");
+        catch (ResponseStatusException | AlbumNotFoundException | EmptyOrNullIdException e){
+            throw e;
         }
-        return repository.save(entity);
+        catch (Exception ex){
+            throw  new UnknownRestException();
+        }
     }
 
     /**
@@ -129,8 +210,14 @@ public class AlbumController {
      * @return la liste des titres
      */
     @GetMapping("/findAllTitresAlbum")
+    @ResponseStatus(HttpStatus.OK)
     public List<String> findAllTitresAlbum() {
-        return repository.findAllTitres();
+        try {
+            return repository.findAllTitres();
+        }
+        catch (Exception exception){
+            throw new UnknownRestException();
+        }
     }
 
     /**
@@ -138,7 +225,34 @@ public class AlbumController {
      * @return la liste des AlbumsAggregate
      */
     @GetMapping("/groupByTitreAndMusiquesAlbum")
+    @ResponseStatus(HttpStatus.OK)
     public List<AlbumAggregate> groupByTitreAndMusiquesAlbum() {
-        return repository.groupByTitreAndMusiques();
+        try {
+            return repository.groupByTitreAndMusiques();
+        }
+        catch (Exception exception){
+            throw new UnknownRestException();
+        }
+    }
+
+    private boolean IsAlbumLastVersion(Album album){
+        return  album.getSchema_version() == albumSchemaVersion;
+    }
+
+    private Album convertSchemaToLastVersionIfNedded(Album album){
+        if ( album.getSchema_version() == 0 ){
+            return convertAlbumV0ToV1(album);
+        }
+        return null;
+    }
+
+    private Album convertAlbumV0ToV1(Album album) {
+        Contact contact = new Contact();
+        contact.setNumeroTelephoneFixe(album.getNumeroTelephone());
+        contact.setNumeroTelephonePortable(album.getNumeroTelephone());
+        album.setContact(contact);
+        album.setSchema_version(1);
+        repository.save(album);
+        return album;
     }
 }

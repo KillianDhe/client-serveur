@@ -30,6 +30,37 @@ public class Album {
     private String couverture;
 
     /**
+     * Version du schema
+     */
+    private int schema_version;
+
+    /**
+     * Numéro de telephone pour contacter l'artiste
+     */
+    private String numeroTelephone;
+
+    /**
+     * Les moyends de contact de l'artiste
+     */
+    private Contact contact;
+
+    public int getSchema_version() {
+        return schema_version;
+    }
+
+    public void setSchema_version(int schema_version) {
+        this.schema_version = schema_version;
+    }
+
+    public Date getDateDeParution() {
+        return dateDeParution;
+    }
+
+    public void setDateDeParution(Date dateDeParution) {
+        this.dateDeParution = dateDeParution;
+    }
+
+    /**
      * Date de parution d'un album
      */
     private Date dateDeParution;
@@ -64,13 +95,15 @@ public class Album {
      * @param artiste = artiste de l'album
      * @param musiques = liste des musiques de l'album
      */
-    public Album(String titre, String couverture, Date dateDeParution, ObjectId artiste_id, Artiste artiste, List<Musique> musiques) {
+    public Album(String titre, String couverture, Date dateDeParution, ObjectId artiste_id, Artiste artiste, List<Musique> musiques, String numeroTelephone, Contact contact) {
         this.titre = titre;
         this.couverture = couverture;
         this.dateDeParution = dateDeParution;
         this.artiste_id = artiste_id;
         this.artiste = artiste;
         this.musiques = musiques;
+        this.numeroTelephone = numeroTelephone;
+        this.contact = contact;
     }
 
     /**
@@ -183,6 +216,22 @@ public class Album {
      */
     public void setMusiques(List<Musique> musiques) {
         this.musiques = musiques;
+    }
+
+    public String getNumeroTelephone() {
+        return numeroTelephone;
+    }
+
+    public void setNumeroTelephone(String numeroTelephone) {
+        this.numeroTelephone = numeroTelephone;
+    }
+
+    public Contact getContact() {
+        return contact;
+    }
+
+    public void setContact(Contact contact) {
+        this.contact = contact;
     }
 }
 
