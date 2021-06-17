@@ -22,6 +22,11 @@ public class Artiste {
     private String pseudo;
 
     /**
+     * L'identité de l'artiste, conteint des infos telles que nom et prénom.
+     */
+    private Identite identite;
+
+    /**
      * LE nom de famille de l'artiste
      */
     private String nom;
@@ -30,6 +35,12 @@ public class Artiste {
      * Le prénom de l'artiste
      */
     private String prenom;
+
+    /**
+     * Version du schema
+     */
+    private int schema_version;
+
 
     /**
      * La date de naissance de l'artiste
@@ -55,12 +66,13 @@ public class Artiste {
      * @param dateDeNaissance la ddate de nbaissance de l'artiste
      * @param distributeur le distributeur de l'artiste
      */
-    public Artiste(String pseudo, String nom, String prenom, Date dateDeNaissance,Distributeur distributeur) {
+    public Artiste(String pseudo, String nom, String prenom, Date dateDeNaissance,Distributeur distributeur, Identite identite) {
         this.pseudo = pseudo;
         this.nom = nom;
         this.prenom = prenom;
         this.dateDeNaissance = dateDeNaissance;
         this.distributeur = distributeur;
+        this.identite = identite;
     }
 
     /**
@@ -165,5 +177,21 @@ public class Artiste {
      */
     public void setDistributeur(Distributeur distributeur) {
         this.distributeur = distributeur;
+    }
+
+    public int getSchema_version() {
+        return schema_version;
+    }
+
+    public void setSchema_version(int schema_version) {
+        this.schema_version = schema_version;
+    }
+
+    public Identite getIdentite() {
+        return identite;
+    }
+
+    public void setIdentite(Identite identite) {
+        this.identite = identite;
     }
 }

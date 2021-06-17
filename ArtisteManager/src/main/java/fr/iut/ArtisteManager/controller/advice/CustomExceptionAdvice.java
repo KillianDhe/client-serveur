@@ -1,6 +1,6 @@
 package fr.iut.ArtisteManager.controller.advice;
 
-import fr.iut.ArtisteManager.controller.CustomException;
+import fr.iut.ArtisteManager.exception.CustomException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

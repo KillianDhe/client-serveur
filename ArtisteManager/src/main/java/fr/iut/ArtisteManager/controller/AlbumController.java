@@ -1,10 +1,12 @@
 package fr.iut.ArtisteManager.controller;
 
 import fr.iut.ArtisteManager.domain.Album;
+import fr.iut.ArtisteManager.domain.Artiste;
+import fr.iut.ArtisteManager.domain.Contact;
+import fr.iut.ArtisteManager.domain.Identite;
+import fr.iut.ArtisteManager.exception.CustomException;
 import fr.iut.ArtisteManager.repository.AlbumRepository;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,10 +21,8 @@ public class AlbumController {
 
     final AlbumRepository repository;
 
-    /**
-     * Spring fonctionne avec de l'injection de dépendances, pas d'annotation à rajouter dans les controller,
-     * pas de new, il va s'en charger pour vous grâce à l'annotation présente sur cette classe.
-     */
+    private final static int albumSchemaVersion = 1;
+
     public AlbumController(AlbumRepository repository) {
         this.repository = repository;
     }
@@ -78,5 +78,26 @@ public class AlbumController {
             throw new CustomException("Cet album n'existe pas");
         }
         return repository.save(entity);
+    }
+
+    private boolean IsArtisteLastVersion(Album album){
+        return  album.getSchema_version() == albumSchemaVersion;
+    }
+
+    private Album convertSchemaToLastVersionIfNedded(Album album){
+        if ( album.getSchema_version() == 0 ){
+            return convertAlbumV0ToV1(album);
+        }
+        return null;
+    }
+
+    private Album convertAlbumV0ToV1(Album album) {
+        Contact contact = new Contact();
+        contact.setNumeroTelephoneFixe(album.getNumeroTelephone());
+        contact.setNumeroTelephonePortable(album.getNumeroTelephone());
+        album.setContact(contact);
+        album.setSchema_version(1);
+        repository.save(album);
+        return album;
     }
 }
