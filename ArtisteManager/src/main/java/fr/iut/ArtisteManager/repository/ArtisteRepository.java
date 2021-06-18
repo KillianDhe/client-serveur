@@ -9,6 +9,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
+/**
+ * Interface représentant le repository pour la gestion des artistes
+ */
 public interface ArtisteRepository extends MongoRepository<Artiste, ObjectId> {
 
         @Aggregation({" {$match: { \"_id\": ?0 }}", "{$lookup: { from: \"albums\", localField: \"_id\", foreignField: \"artiste_id\", as: \"albums\" }} ])"})

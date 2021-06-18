@@ -147,9 +147,9 @@ public class ArtisteController {
     }
 
     /**
-     *
-     * @param id
-     * @return
+     * Permet de mettre à jour un Artiste qui n'a pas de schema_version (v0 ) en version schema_version1 (nom et prénom sont désormais dans un objet identité)
+     * @param id l'identifiant de l'artiste à mettre à jour
+     * @return l'artiste mis à jour
      */
     @PutMapping("/updateArtisteSchematoV1/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -238,10 +238,20 @@ public class ArtisteController {
         }
     }
 
+    /**
+     * Vérifie si l'artiste est à la derniere version
+     * @param artiste l'artiste pour lequel on veut vérifier la version
+     * @return un booléen indiquant si oui ou non l'artiste utilise la derniere version disponible.
+     */
     private boolean IsArtisteLastVersion(Artiste artiste){
         return  artiste.getSchema_version() == artisteSchemaVersion;
     }
 
+    /**
+     * Mets à jour un artiste si il n'est pas à la derniere version.
+     * @param artiste l'album à  mettre potentiellement à jour
+     * @return l'artiste mis à jour si tel est le cas, null sinon
+     */
     private Artiste convertSchemaToLastVersionIfNedded(Artiste artiste){
         if ( artiste.getSchema_version() == 0 ){
             return convertArtisteV0ToV1(artiste);
@@ -249,6 +259,11 @@ public class ArtisteController {
         return null;
     }
 
+    /**
+     * Convertit un artiste qui n'a pas de schemaVersion (v0) en album v1
+     * @param artiste l'album à convertir
+     * @return l'artiste convertit
+     */
     private Artiste convertArtisteV0ToV1(Artiste artiste) {
         Identite identite = new Identite();
         identite.setNom(artiste.getNom());

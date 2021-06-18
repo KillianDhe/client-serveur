@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"fr.iut.ArtisteManager"},{"l":"fr.iut.ArtisteManager.controller"},{"l":"fr.iut.ArtisteManager.domain"},{"l":"fr.iut.ArtisteManager.exception"},{"l":"fr.iut.ArtisteManager.repository"}]

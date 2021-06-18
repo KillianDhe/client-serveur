@@ -1,0 +1,618 @@
+{
+	"info": {
+		"_postman_id": "e97969ce-86be-41fe-a855-6b3c38f70779",
+		"name": "AlbumRepo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "getAllAlbums",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200, ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"response is an array\", function () {",
+							"  pm.expect(jsonData).to.be.an(\"array\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/getAllAlbums",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"getAllAlbums"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAlbumById",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200, ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"    pm.response.to.be.success",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"response is an object\", function () {",
+							"  pm.expect(jsonData).to.be.an(\"object\");",
+							"});",
+							"",
+							"pm.test(\"l'album est thriller (avec l'id d'origine of course)\", function () {",
+							"  pm.expect(jsonData.titre).to.eql(\"Thriller\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/getAlbumById/60cb4afe9fe04a2a406d801b",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"getAlbumById",
+						"60cb4afe9fe04a2a406d801b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllAlbumsByTitre",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200, ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"response is an array\", function () {",
+							"  pm.expect(jsonData).to.be.an(\"array\");",
+							"});",
+							"",
+							"pm.test(\"Les noms des albums sont bien celui recherché\", function () {",
+							"      _.each(jsonData, (item) => {",
+							"        pm.expect(item.titre).to.be.eql(pm.request.url.query.toObject().titre);",
+							"    })",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/getAllAlbumsByTitre?titre=Thrillerr",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"getAllAlbumsByTitre"
+					],
+					"query": [
+						{
+							"key": "titre",
+							"value": "Thrillerr"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addAlbumV0",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 201, created\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"    pm.response.to.be.success",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"response is an object\", function () {",
+							"  pm.expect(jsonData).to.be.an(\"object\");",
+							"});",
+							"",
+							"const requestBody = JSON.parse(pm.request.body.raw);",
+							"pm.test(\"Le titre et la couverture sont ceux passés en paramètre\", function () {",
+							"  pm.expect(jsonData.titre).to.be.eql(requestBody.titre);",
+							"  pm.expect(jsonData.couverture).to.be.eql(requestBody.couverture);",
+							"});",
+							"",
+							"pm.test(\"Couverture est bien devenu imageDeCouverture (mise à jour autmatique de la version de schema)\", function () {",
+							"  pm.expect(jsonData.imageDeCouverture).to.be.eql(requestBody.couverture);",
+							"});",
+							"",
+							"pm.test(\"schema version à 1\", function () {",
+							"  pm.expect(jsonData.schema_version).to.eql(1);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"titre\" : \"Thriller\",\r\n    \"couverture\" : \"https://coucou.fr/img/cc.jpg\",\r\n    \"dateDeParution\" : \"1982-12-01T00:00:00\",\r\n    \"artiste_id\" : \"60b66421e4ff64f92f136fba\",\r\n    \"musiques\" : [ \r\n        {\r\n            \"titre\" : \"Thriller\",\r\n            \"duree\" : 13.42,\r\n            \"nbEcoutes\" : 10\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/addAlbum",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"addAlbum"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addAlbumV1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 201, created\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"    pm.response.to.be.success",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"response is an object\", function () {",
+							"  pm.expect(jsonData).to.be.an(\"object\");",
+							"});",
+							"",
+							"const requestBody = JSON.parse(pm.request.body.raw);",
+							"pm.test(\"Le titre et la couverture sont ceux passés en paramètre\", function () {",
+							"  pm.expect(jsonData.titre).to.be.eql(requestBody.titre);",
+							"  pm.expect(jsonData.imageDeCouverture).to.be.eql(requestBody.imageDeCouverture);",
+							"});",
+							"",
+							"pm.test(\"schema version à 1\", function () {",
+							"  pm.expect(jsonData.schema_version).to.eql(1);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"titre\" : \"Thriller\",\n    \"imageDeCouverture\" : \"https://coucou.fr/img/cc.jpg\",\n    \"dateDeParution\" : \"1982-12-01T00:00:00\",\n    \"artiste_id\" : \"60b66421e4ff64f92f136fba\",\n    \"musiques\" : [ \n        {\n            \"titre\" : \"Thriller\",\n            \"duree\" : 13.42,\n            \"nbEcoutes\" : 10\n        }\n    ],\n    \"schema_version\" : 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/addAlbum",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"addAlbum"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteAlbumsByTitre",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Return a 204, no content\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/deleteAlbumsByTitre?name=Thriller1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"deleteAlbumsByTitre"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "Thriller1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateAlbum",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"response is an object\", function () {",
+							"  pm.expect(jsonData).to.be.an(\"object\");",
+							"",
+							"});",
+							"",
+							"const requestBody = JSON.parse(pm.request.body.raw);",
+							"pm.test(\"Le titre et la couverture sont ceux passés en paramètre\", function () {",
+							"  pm.expect(jsonData.titre).to.be.eql(requestBody.titre);",
+							"  pm.expect(jsonData.couverture).to.be.eql(requestBody.couverture);",
+							"});",
+							"",
+							"pm.test(\"schema version à 1\", function () {",
+							"  pm.expect(jsonData.schema_version).to.eql(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"_id\" : \"60a3f44de4ff64f92f0edf76\",\r\n    \"titre\" : \"Or Noir\",\r\n    \"couverture\" : \"\",\r\n    \"artiste_id\" : \"60b66421e4ff64f92f136fba\",\r\n    \"musiques\" : [ \r\n        {\r\n            \"titre\" : \"SEVRAN\",\r\n            \"duree\" : 13,\r\n            \"nbEcoutes\" : 10\r\n        },\r\n        {\r\n            \"titre\" : \"ZOO\",\r\n            \"duree\" : 12,\r\n            \"nbEcoutes\" : 10\r\n        }\r\n    ],\r\n    \"_class\" : \"fr.iut.ArtisteManager.domain.Album\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/updateAlbum",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"updateAlbum"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteAlbumById",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Return a 204, no content\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/deleteAlbum/60bf9588c0f9a37565721e6e",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"deleteAlbum",
+						"60bf9588c0f9a37565721e6e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "findAllTitresAlbum",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200, ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"response is an array\", function () {",
+							"  pm.expect(jsonData).to.be.an(\"array\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/findAllTitresAlbum",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"findAllTitresAlbum"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "groupByTitreAndMusiquesAlbum",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200, ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"response is an array\", function () {",
+							"  pm.expect(jsonData).to.be.an(\"array\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/groupByTitreAndMusiquesAlbum",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"groupByTitreAndMusiquesAlbum"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateAlbumSchematoV1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Return a 200,ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"",
+							"//forcément vrai, Pas de test plus poussé pour cela car on ne sait pas si l'entité updated avait une couverture, on ne peut pas tester différent de nul ou autr.",
+							"pm.test(\"imageDeCouverture existe\", function () {",
+							"  pm.expect(jsonData.imageDeCouverture).to.exist;",
+							"",
+							"});",
+							"",
+							"pm.test(\"schema version à 1\", function () {",
+							"  pm.expect(jsonData.schema_version).to.eql(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/updateAlbumSchematoV1/60cb4afe9fe04a2a406d801b",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"updateAlbumSchematoV1",
+						"60cb4afe9fe04a2a406d801b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAllAlbumsByTitreContaining",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200, ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"response is an array\", function () {",
+							"  pm.expect(jsonData).to.be.an(\"array\");",
+							"});",
+							"",
+							"pm.test(\"Les noms des albums sont bien celui recherché\", function () {",
+							"      _.each(jsonData, (item) => {",
+							"        pm.expect(item.titre).to.contains(pm.request.url.query.toObject().titre);",
+							"    })",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/getAllAlbumsByTitreContaining?titre=Th",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"getAllAlbumsByTitreContaining"
+					],
+					"query": [
+						{
+							"key": "titre",
+							"value": "Th"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "localhost:8080"
+		}
+	]
+}

@@ -144,8 +144,8 @@ public class AlbumController {
 
     /**
      * Méthode pour récupérer tous les albums de la base de données avec un titre contenant le titre passé en paramètre
-     * @param titre
-     * @returnla liste des albums
+     * @param titre le text  pour lequel on veut récuperer les albums contenant celui-ci dans le titre
+     * @return la liste des albums ayant un titre contenant le titre passé en paramètre
      */
     @GetMapping("/getAllAlbumsByTitreContaining")
     @ResponseStatus(HttpStatus.OK)
@@ -159,8 +159,9 @@ public class AlbumController {
     }
 
     /**
-     * Méthode pour récupérer tous les albums de la base de données
-     * @return la liste des albums
+     * Méthode pour récupérer tous les albums avec le titre passé en paramètre.
+     * @param titre le titre pour lequel on veut récuperer les albums
+     * @return la liste des albums ayant pour titre le titre passé en paramètre
      */
 
     @GetMapping("/getAllAlbumsByTitre")
@@ -233,6 +234,11 @@ public class AlbumController {
         }
     }
 
+    /**
+     * Permet de mettre à jour un Album qui n'a pas de schema_version (v0 ) en version schema_version1 (couverture devient imageDeCouverture)
+     * @param id l'identifiant de l'album à mettre à jour
+     * @return l'album mis à jour
+     */
     @PutMapping("/updateAlbumSchematoV1/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Album updateArtisteSchema(@PathVariable String id){
@@ -293,10 +299,20 @@ public class AlbumController {
         }
     }
 
+    /**
+     * Vérifie si l'album est à la derniere version
+     * @param album l'album pour lequel on veut vérifier la version
+     * @return un booléen indiquant si oui ou non l'album utilise la derniere version disponible.
+     */
     private boolean IsAlbumLastVersion(Album album){
         return  album.getSchema_version() == albumSchemaVersion;
     }
 
+    /**
+     * Mets à jour un album si il n'est pas à la derniere version.
+     * @param album l'album à  mettre potentiellement à jour
+     * @return l'album mis à jour si tel est le cas, null sinon
+     */
     private Album convertSchemaToLastVersionIfNedded(Album album){
         if ( album.getSchema_version() == 0 ){
             return convertAlbumV0ToV1(album);
@@ -304,6 +320,11 @@ public class AlbumController {
         return null;
     }
 
+    /**
+     * Convertit un album qui n'a pas de schemaVersion (v0) en album v1
+     * @param album l'album à convertir
+     * @return l'album convertit
+     */
     private Album convertAlbumV0ToV1(Album album) {
         album.setImageDeCouverture(album.getCouverture());
         album.setSchema_version(1);

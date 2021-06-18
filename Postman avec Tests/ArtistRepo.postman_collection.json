@@ -1,0 +1,403 @@
+{
+	"info": {
+		"_postman_id": "9f66ced7-f846-488f-9d3d-570d980fa275",
+		"name": "ArtistRepo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "getAllArtistes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"response is an array\", function () {",
+							"  pm.expect(jsonData).to.be.an(\"array\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/getAllArtistes",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"getAllArtistes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getArtisteByIdWithAlbums",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"response is an object qui contient bien une liste d'albums'\", function () {",
+							"  pm.expect(jsonData).to.be.an(\"object\");",
+							"  pm.expect(jsonData.albums).to.be.an(\"array\");",
+							"",
+							"});",
+							"",
+							"pm.test(\"pseudo is kaaris\", function () {",
+							"  pm.expect(jsonData.pseudo).to.eql(\"Kaaris\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/getArtisteByIdWithAlbums?id=60ad19b0e4ff64f92f10b7da",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"getArtisteByIdWithAlbums"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "60ad19b0e4ff64f92f10b7da"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addArtisteV0",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 201, created\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"    pm.response.to.be.success",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"response is an object\", function () {",
+							"  pm.expect(jsonData).to.be.an(\"object\");",
+							"});",
+							"",
+							"const requestBody = JSON.parse(pm.request.body.raw);",
+							"pm.test(\"bon pseudo\", function () {",
+							"    pm.expect(jsonData.pseudo).to.be.eql(requestBody.pseudo);",
+							"});",
+							"",
+							"pm.test(\"v0 bien converti en v1 (nom et prenom dans identite)\", function () {",
+							"    pm.expect(jsonData.identite.nom).to.be.eql(requestBody.nom);",
+							"    pm.expect(jsonData.identite.prenom).to.be.eql(requestBody.prenom);",
+							"});",
+							"",
+							"pm.test(\"schema version à 1\", function () {",
+							"  pm.expect(jsonData.schema_version).to.eql(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"pseudo\" : \"brell\",\n    \"dateDeNaissance\" : \"1997-11-01T00:00:00\",\n    \"distributeur\" : {\n        \"nom\" : \"disney\"\n    },\n\n    \"prenom\" : \"jacques\",\n    \"nom\" : \"brel\"\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/addArtiste",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"addArtiste"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addArtisteV1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 201, created\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"    pm.response.to.be.success",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"response is an object\", function () {",
+							"  pm.expect(jsonData).to.be.an(\"object\");",
+							"});",
+							"",
+							"const requestBody = JSON.parse(pm.request.body.raw);",
+							"pm.test(\"pseudo, nom et prenom sont bien ceux attendus\", function () {",
+							"    pm.expect(jsonData.pseudo).to.be.eql(requestBody.pseudo);",
+							"    pm.expect(jsonData.identite.nom).to.be.eql(requestBody.identite.nom);",
+							"    pm.expect(jsonData.identite.prenom).to.be.eql(requestBody.identite.prenom);",
+							"});",
+							"",
+							"pm.test(\"schema version à 1\", function () {",
+							"  pm.expect(jsonData.schema_version).to.eql(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"pseudo\" : \"Booba\",\n    \"dateDeNaissance\" : \"1997-11-01T00:00:00\",\n    \"distributeur\" : {\n        \"nom\" : \"disney\"\n    },\n    \"identite\" : {\n        \"prenom\" : \"paul\",\n        \"nom\" : \"jean\"\n    },\n    \"schema_version\": 1 \n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/addArtiste",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"addArtiste"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateArtiste",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"response is an object\", function () {",
+							"  pm.expect(jsonData).to.be.an(\"object\");",
+							"",
+							"});",
+							"",
+							"const requestBody = JSON.parse(pm.request.body.raw);",
+							"pm.test(\"pseudo, nom et prenom sont bien ceux attendus (convertis car v0 donné)\", function () {",
+							"    pm.expect(jsonData.pseudo).to.be.eql(requestBody.pseudo);",
+							"    pm.expect(jsonData.identite.nom).to.be.eql(requestBody.nom);",
+							"    pm.expect(jsonData.identite.prenom).to.be.eql(requestBody.prenom);",
+							"});",
+							"",
+							"pm.test(\"schema version à 1\", function () {",
+							"  pm.expect(jsonData.schema_version).to.eql(1);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"_id\" : \"60bf93c2f5c37c25bbaf0744\",\n    \"pseudo\" : \"Tristandu63\",\n    \"nom\" : \"Tristan\",\n    \"prenom\" : \"Arnould\",\n    \"dateDeNaissance\" : \"2000-12-01T00:00:00\",\n    \"distributeur\" : {\n        \"nom\" : \"tunecore\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/updateArtiste",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"updateArtiste"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteArtiste",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Return a 204, no content\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/deleteArtiste/",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"deleteArtiste",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateArtisteSchemaToV1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Return a 200,ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response must be valid and have a body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"l'objet identité n'est plus null\", function () {",
+							"  pm.expect(jsonData.identite).to.be.not.null;",
+							"",
+							"});",
+							"",
+							"pm.test(\"schema version à 1\", function () {",
+							"  pm.expect(jsonData.schema_version).to.eql(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/updateArtisteSchematoV1/60bf9385f5c37c25bbaf0743",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"updateArtisteSchematoV1",
+						"60bf9385f5c37c25bbaf0743"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "localhost:8080"
+		}
+	]
+}

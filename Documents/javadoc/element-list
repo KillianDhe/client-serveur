@@ -1,0 +1,5 @@
+fr.iut.ArtisteManager
+fr.iut.ArtisteManager.controller
+fr.iut.ArtisteManager.domain
+fr.iut.ArtisteManager.exception
+fr.iut.ArtisteManager.repository
